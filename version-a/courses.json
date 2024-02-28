@@ -1,0 +1,6 @@
+[
+    ["Math 101", true, null, 30],
+    ["English 101", true, null, 25],
+    ["History 101", false, "English 101", 20],
+    ["Science 101", true, "Math 101", 35]
+]

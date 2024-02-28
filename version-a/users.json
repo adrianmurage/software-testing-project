@@ -1,0 +1,6 @@
+[
+    ["admin1", "password1", "Admin"],
+    ["lecturer1", "password2", "Lecturer"],
+    ["student1", "password3", "Student"],
+    ["student2", "password4", "Student"]
+]

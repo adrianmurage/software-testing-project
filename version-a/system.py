@@ -26,6 +26,7 @@ class System:
     def __init__(self):
         self.users = self.load_users()
         self.courses = self.load_courses()
+        self.schedules = self.load_schedules()
 
     def load_users(self):
         # Load users from the 'users.json' file
@@ -69,21 +70,13 @@ class System:
             json.dump(courses_json, f)
 
     def load_schedules(self):
-        try:
-            with open('schedules.json', 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}
+        with open('schedules.json', 'r') as f:
+            schedules = json.load(f)
+        return schedules
 
     def save_schedules(self):
         with open('schedules.json', 'w') as f:
             json.dump(self.schedules, f)
-
-    def register_for_class(self, username, course):
-        if username not in self.schedules:
-            self.schedules[username] = []
-        self.schedules[username].append(course.name)
-        self.save_schedules()
 
     def authenticate(self, username, password):
         return username in self.users and self.users[username].password == password
@@ -94,11 +87,11 @@ class System:
             print("Please log in or type 'exit' to quit")
             username = input("Username: ")
             if username.lower() == 'exit':
-                self.save_courses()     
+                self.save_courses()
                 return
             password = getpass.getpass()
             if password.lower() == 'exit':
-                self.save_courses()     
+                self.save_courses()
                 return
             if self.authenticate(username, password):
                 print("Login successful")
@@ -111,7 +104,6 @@ class System:
                     self.student_interface(user)
             else:
                 print("Login failed")
-        
 
     def admin_interface(self, user):
         user = Admin(user.username, user.password)
@@ -124,7 +116,7 @@ class System:
             print("--------------------")
             choice = input("Choose an option or type 'exit' to quit: ")
             if choice.lower() == 'exit':
-                self.save_courses()     
+                self.save_courses()
                 return
 
             if choice == '1':
@@ -187,35 +179,26 @@ class System:
     def student_interface(self, user):
         user = Student(user.username, user.password)
         while True:
-            print("\n1. Register for class")
-            print("2. View schedule")
-            print("3. Add class")
-            print("4. Drop class")
-            print("5. View classes")
-            print("6. Logout")
+            print("\n1. View schedule")
+            print("2. Add class")
+            print("3. Drop class")
+            print("4. View all classes")
+            print("5. Logout")
             print("--------------------")
             choice = input("Choose an option or type 'exit' to quit: ")
             if choice.lower() == 'exit':
                 return
 
             if choice == '1':
-                name = input("Enter course name: ")
-                for course in self.courses:
-                    if course.name == name:
-                        user.register_for_class(course, self)
-                        break
+                user.view_schedule(self.schedules)
             elif choice == '2':
-                user.view_schedule()
+                name = input("Enter course name: ")
+                self.schedules = user.add_class(name, self.schedules)
             elif choice == '3':
                 name = input("Enter course name: ")
-                for course in self.courses:
-                    if course.name == name:
-                        user.add_class(course)
-                        break
+                self.schedules = user.drop_class(name, self.schedules)
             elif choice == '4':
-                name = input("Enter course name: ")
-                user.drop_class(name)
-            elif choice == '5':
                 user.view_classes(self.courses)
-            elif choice == '6':
+            elif choice == '5':
                 break
+        self.save_schedules()

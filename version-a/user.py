@@ -62,37 +62,53 @@ class Lecturer(User):
 class Student(User):
     def __init__(self, username, password):
         super().__init__(username, password)
-        self.schedule = []
-        self.completed_courses = []  # New attribute
-        self.gpa = 0.0
 
-    def register_for_class(self, course, system):
-        if len(system.schedules.get(self.username, [])) < 5 or self.gpa >= 3.0:
-            if course.add_student(self):
-                system.register_for_class(self.username, course)
-            else:
-                print(f"The course {course.name} is full.")
-        else:
-            print("Cannot register for more than 5 classes with GPA less than 3.0")
+    # def register_for_class(self, course, system):
+    #     if len(system.schedules.get(self.username, [])) < 5 or self.gpa >= 3.0:
+    #         if course.add_student(self):
+    #             system.register_for_class(self.username, course)
+    #         else:
+    #             print(f"The course {course.name} is full.")
+    #     else:
+    #         print("Cannot register for more than 5 classes with GPA less than 3.0")
 
-    def view_schedule(self):
-        print("------------------------")
-        for course in self.schedule:
-            print("|", course.name, "|")
-        print("------------------------")
+    def view_schedule(self, schedules):
+        for student in schedules:
+            if student['name'] == self.username:
+                print("\n------------------------")
+                print(f"Schedule for {self.username}:")
+                print("Courses:", ', '.join(student['courses']))
+                print("Completed Courses:", ', '.join(
+                    student['completed_courses']))
+                print("GPA:", student['gpa'])
+                print("------------------------")
+                return
+        print(f"No schedule found for {self.username}")
 
-    def add_class(self, course):
-        self.schedule.append(course)
-        print("\n------------------------")
-        print(f"| Class {course.name} added successfully! |")
-        print("------------------------\n")
+    def add_class(self, course_name, schedules):
+        for student in schedules:
+            if student['name'] == self.username:
+                if len(student['courses']) < 5 or student['gpa'] >= 3.0:
+                    student['courses'].append(course_name)
+                    print("\n------------------------")
+                    print(f"| Class {course_name} added successfully! |")
+                    print("------------------------\n")
+                else:
+                    print(
+                        "Cannot register for more than 5 classes with GPA less than 3.0")
+                return schedules
+        print(f"No schedule found for {self.username}")
 
-    def drop_class(self, course_name):
-        for course in self.schedule:
-            if course.name == course_name:
-                course.remove_student(self)
-                self.schedule.remove(course)
-                break
+    def drop_class(self, course_name, schedules):
+        for student in schedules:
+            if student['name'] == self.username:
+                student['courses'] = [
+                    course for course in student['courses'] if course != course_name]
+                print("\n------------------------")
+                print(f"| Class {course_name} dropped successfully! |")
+                print("------------------------\n")
+                return schedules
+        print(f"No schedule found for {self.username}")
 
     def view_classes(self, courses):
         print("------------------------")

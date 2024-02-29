@@ -31,32 +31,42 @@ class System:
         # Load users from the 'users.json' file
         with open('users.json') as f:
             users_json = json.load(f)
-        
+
         # Create User objects based on the role specified in the JSON file
         users = {
             username: (
-                User if role == 'User' else 
-                Admin if role == 'Admin' else 
-                Lecturer if role == 'Lecturer' else 
+                User if role == 'User' else
+                Admin if role == 'Admin' else
+                Lecturer if role == 'Lecturer' else
                 Student
-            )(username, password) 
+            )(username, password)
             for username, password, role in users_json
         }
-        
+
         return users
 
     def load_courses(self):
         # Load courses from the 'courses.json' file
         with open('courses.json') as f:
             courses_json = json.load(f)
-        
+
         # Create Course objects based on the data in the JSON file
         courses = [
             Course(name, is_open, prerequisite, capacity)
             for name, is_open, prerequisite, capacity in courses_json
         ]
-        
+
         return courses
+
+    def save_courses(self):
+        # Convert the courses to a JSON-serializable format
+        courses_json = [
+            (course.name, course.is_open, course.prerequisite, course.capacity)
+            for course in self.courses
+        ]
+        # Save the courses to the 'courses.json' file
+        with open('courses.json', 'w') as f:
+            json.dump(courses_json, f)
 
     def load_schedules(self):
         try:
@@ -84,9 +94,11 @@ class System:
             print("Please log in or type 'exit' to quit")
             username = input("Username: ")
             if username.lower() == 'exit':
+                self.save_courses()     
                 return
             password = getpass.getpass()
             if password.lower() == 'exit':
+                self.save_courses()     
                 return
             if self.authenticate(username, password):
                 print("Login successful")
@@ -99,6 +111,7 @@ class System:
                     self.student_interface(user)
             else:
                 print("Login failed")
+        
 
     def admin_interface(self, user):
         user = Admin(user.username, user.password)
@@ -106,10 +119,12 @@ class System:
             print("\n1. Add course")
             print("2. Update course")
             print("3. Delete course")
-            print("4. Logout")
+            print("4. View courses")
+            print("5. Logout")
             print("--------------------")
             choice = input("Choose an option or type 'exit' to quit: ")
             if choice.lower() == 'exit':
+                self.save_courses()     
                 return
 
             if choice == '1':
@@ -120,8 +135,8 @@ class System:
                 if prerequisite.lower() == 'none':
                     prerequisite = None
                 capacity = int(input("Enter the capacity of the course: "))
-                user.add_course(
-                    Course(name, is_open, prerequisite, capacity))
+                self.courses = user.add_course(
+                    Course(name, is_open, prerequisite, capacity), self.courses)
             elif choice == '2':
                 name = input("Enter course name: ")
                 new_name = input("Enter new course name: ")
@@ -132,13 +147,16 @@ class System:
                     prerequisite = None
                 capacity = int(
                     input("Enter the new capacity of the course: "))
-                user.update_course(name, Course(
-                    new_name, is_open, prerequisite, capacity))
+                self.courses = user.update_course(name, Course(
+                    new_name, is_open, prerequisite, capacity), self.courses)
             elif choice == '3':
                 name = input("Enter course name: ")
-                user.delete_course(name)
+                self.courses = user.delete_course(name, self.courses)
             elif choice == '4':
+                user.view_courses(self.courses)
+            elif choice == '5':
                 break
+        self.save_courses()
 
     def lecturer_interface(self, user):
         user = Lecturer(user.username, user.password)
@@ -167,7 +185,7 @@ class System:
                 break
 
     def student_interface(self, user):
-        user = Student(user.username, user.password)  # Pass 'self' as the third argument
+        user = Student(user.username, user.password)
         while True:
             print("\n1. Register for class")
             print("2. View schedule")

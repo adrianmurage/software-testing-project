@@ -1,3 +1,4 @@
+import json
 class Course:
     def __init__(self, name, is_open, prerequisite, capacity):
         self.name = name
@@ -15,3 +16,6 @@ class Course:
 
     def remove_student(self, student):
         self.students.remove(student)
+
+    def __str__(self):
+        return json.dumps(self.__dict__, indent=4)

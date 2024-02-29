@@ -1,3 +1,6 @@
+import json
+
+
 class User:
     def __init__(self, username, password):
         self.username = username
@@ -7,19 +10,36 @@ class User:
 class Admin(User):
     def __init__(self, username, password):
         super().__init__(username, password)
-        self.courses = []
 
-    def add_course(self, course):
-        self.courses.append(course)
+    def add_course(self, course, courses):
+        courses.append(course)
+        print("\n------------------------")
+        print(f"| Course {course.name} added successfully! |")
+        print("------------------------\n")
+        return courses
 
-    def update_course(self, course_name, new_course):
-        for i, course in enumerate(self.courses):
+    def update_course(self, course_name, new_course, courses):
+        for i, course in enumerate(courses):
             if course.name == course_name:
-                self.courses[i] = new_course
+                courses[i] = new_course
+        print("\n------------------------")
+        print(f"| Course {course_name} updated successfully! |")
+        print("------------------------\n")
+        return courses
 
-    def delete_course(self, course_name):
-        self.courses = [
-            course for course in self.courses if course.name != course_name]
+    def delete_course(self, course_name, courses):
+        courses = [
+            course for course in courses if course.name != course_name]
+        print("\n------------------------")
+        print(f"| Course {course_name} deleted successfully! |")
+        print("------------------------\n")
+        return courses
+
+    def view_courses(self, courses):
+        print("------------------------")
+        for course in courses:
+            print("|", course.name, "|")
+        print("------------------------")
 
 
 class Lecturer(User):

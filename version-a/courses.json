@@ -1,6 +1,8 @@
 [
-    ["Math 101", true, null, 30],
-    ["English 101", true, null, 25],
-    ["History 101", false, "English 101", 20],
-    ["Science 101", true, "Math 101", 35]
+  ["Math 101", true, null, 30],
+  ["English 101", true, null, 25],
+  ["History 101", false, "English 101", 20],
+  ["Comp 101", true, null, 40],
+  ["Calc 201", true, "Calculus 101", 20],
+  ["Calculus 101", true, "Math 101", 30]
 ]

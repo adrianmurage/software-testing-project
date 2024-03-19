@@ -1,1 +1,14 @@
-[{"name": "student1", "courses": ["Math 101", "English 101"], "completed_courses": ["Comp 101"], "gpa": 3.5}, {"name": "student2", "courses": ["Math 101", "English 101", "Comp 101"], "completed_courses": [], "gpa": 3.0}]
+[
+  {
+    "name": "student1",
+    "courses": ["Math 101", "English 101"],
+    "completed_courses": ["Comp 101"],
+    "gpa": 3.5
+  },
+  {
+    "name": "student2",
+    "courses": ["Math 101", "English 101", "Comp 101"],
+    "completed_courses": [],
+    "gpa": 3.0
+  }
+]

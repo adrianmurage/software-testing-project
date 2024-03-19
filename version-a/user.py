@@ -1,11 +1,7 @@
-import json
-
-
 class User:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-
 
 class Admin(User):
     def __init__(self, username, password):
@@ -28,12 +24,12 @@ class Admin(User):
         return courses
 
     def delete_course(self, course_name, courses):
-        courses = [
-            course for course in courses if course.name != course_name]
-        print("\n------------------------")
-        print(f"| Course {course_name} deleted successfully! |")
-        print("------------------------\n")
-        return courses
+        for course in courses:
+            if course.name == course_name:
+                courses.remove(course)
+                print(f'Course {course_name} deleted successfully')
+                return
+        print(f'Course {course_name} not found')
 
     def view_courses(self, courses):
         print("------------------------")
@@ -62,15 +58,6 @@ class Lecturer(User):
 class Student(User):
     def __init__(self, username, password):
         super().__init__(username, password)
-
-    # def register_for_class(self, course, system):
-    #     if len(system.schedules.get(self.username, [])) < 5 or self.gpa >= 3.0:
-    #         if course.add_student(self):
-    #             system.register_for_class(self.username, course)
-    #         else:
-    #             print(f"The course {course.name} is full.")
-    #     else:
-    #         print("Cannot register for more than 5 classes with GPA less than 3.0")
 
     def view_schedule(self, schedules):
         for student in schedules:
